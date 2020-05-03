@@ -1,2 +1,5 @@
 from huey import RedisHuey
-huey = RedisHuey("whois", host="redis")
+import os
+
+
+huey = RedisHuey("whois", host=os.environ['REDIS_HOST'], port=os.environ['REDIS_PORT'])

@@ -73,15 +73,19 @@ class Search(Resource):
                 "multi_match": {
                     "fields": ["username", "fullname", "title", "email", "company", "office", "address", "description"],
                     "query": query_string['q'],
-                    "type": "cross_fields",
-                    "use_dis_max": False
+                    "type": "cross_fields"
                 }
             },
             "size": MAX_RESULTS
         }
-        resp = requests.post(url, data=json.dumps(query))
+        resp = requests.post(url, data=json.dumps(query), headers = {'Content-Type': 'application/json'})
         data = resp.json()
         users = []
+        if resp.status_code != 200:
+            print >> sys.stderr, "status code from resp: %d" % resp.status_code
+            print >> sys.stderr, "Results from /search call: %s" % data
+            return users
+        
         for hit in data['hits']['hits']:
             user = hit['_source']
             user['id'] = hit['_id']

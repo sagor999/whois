@@ -6,7 +6,7 @@ import json
 from elasticsearch import Elasticsearch
 
 USER_JSON_FILENAME = '/data/users.json'
-INDEX_NAME = 'users'
+INDEX_NAME = 'whois-users'
 DOC_TYPE = 'user'
 
 
@@ -53,14 +53,15 @@ def update_from_ldap(server, username, password, schema, pull):
             records = json.load(open(USER_JSON_FILENAME))
             total_records = len(records)
 
-            es = Elasticsearch("http://elasticsearch:9200")
+            es_url = os.environ['ELASTICSEARCH_URL']
+            es = Elasticsearch(es_url)
 
             print >> sys.stderr, "[%5d] Deleting index %s" % (pid, INDEX_NAME)
             es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
 
             print >> sys.stderr, "[%5d] Creating new mapping for index %s" % (pid, INDEX_NAME)
             # es.indices.create(index=INDEX_NAME, ignore=400, body=INDEX_MAPPING)
-            command = '''curl -Ss -XPUT 'http://elasticsearch:9200/users' -H 'Content-Type: application/json' -d "@/app/scripts/index.json"'''
+            command = '''curl -Ss -XPUT %s/whois-users -H 'Content-Type: application/json' -d "@/app/scripts/index.json"''' % (es_url)
             if 0 != os.system(command):
                 print >> sys.stderr, '[%5d] Upload of index failed, aborting' % (pid)
                 return None

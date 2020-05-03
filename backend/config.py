@@ -1,5 +1,7 @@
+import os
+
 api_base_url = '/api/v1'
 
 es_base_url = {
-    'users': 'http://elasticsearch:9200/users',
+    'users': os.environ['ELASTICSEARCH_URL']+'/whois-users',
 }

@@ -32,7 +32,7 @@
         }
     },
     "mappings": {
-        "users": {
+        "whois-users": {
             "properties": {
                 "fullname": {
                     "type": "text",
